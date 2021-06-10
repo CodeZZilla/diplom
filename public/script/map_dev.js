@@ -1,9 +1,9 @@
 let geojson;
-let map = L.map('mapid').setView([60.8, 100], 3);
+let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-    id: 'mapbox/light-v9',
+    id: 'mapbox/light-v10',
     tileSize: 512,
     zoomOffset: -1,
     accessToken:'pk.eyJ1Ijoia2l0dmFsZW50eW4xIiwiYSI6ImNrcHBxd2liMjBjYngycXM0aXl5MG8wZjkifQ.Lu-g6dONffgL4I0Cj1p5_A'
@@ -12,15 +12,15 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 L.geoJson(statesData).addTo(map);
 
 info.onAdd = function (map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this._div = L.DomUtil.create('div', 'info');
     this.update();
     return this._div;
 };
 
 info.update = function (props) {
-    this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
-        '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
-        : 'Hover over a state');
+    this._div.innerHTML = (props ?
+        '<b>' + props.name + '</b><br />' + props.student + ' people / mi<sup>2</sup>'
+        : 'Наведите на область');
 };
 info.addTo(map);
 
@@ -32,11 +32,11 @@ function getColor(d) {
                     d > 50   ? '#FD8D3C' :
                         d > 20   ? '#FEB24C' :
                             d > 10   ? '#FED976' :
-                                '#FFEDA0';
+                                '#fff7bc';
 }
 function style(feature) {
     return {
-        fillColor: getColor(feature.properties.density),
+        fillColor: getColor(feature.properties.student),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -52,7 +52,7 @@ function highlightFeature(e) {
         weight: 2,
         color: '#666',
         dashArray: '',
-        fillOpacity: 0.5
+        fillOpacity: 0.7
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -76,6 +76,9 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
         click: zoomToFeature
     });
+    if (feature.properties && feature.properties.name) {
+        layer.bindPopup(feature.properties.name);
+    }
 }
 
 geojson = L.geoJson(statesData, {

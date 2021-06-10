@@ -1,4 +1,7 @@
-#mapid { height: 600px; }
+#mapid {
+    height: 870px;
+
+}
 .info {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
