@@ -19,13 +19,28 @@
 
 </head>
 <body>
-    <h1>Привет мир!</h1>
-    <form action="/addFile" enctype="multipart/form-data" method="post">
-        <input type="file" name="filedata">
-        <input type="submit" value="Отправить файл">
-    </form>
-    <div id="mapid"></div>
+    <h1 style="text-align: center">Интерактивно-аналитическая система</h1>
+    <div style="display: flex; margin-left: 30px">
+        <form action="/addFile" enctype="multipart/form-data" method="post" id="uploader">
+            <div style="display: flex">
+                <div id="file-list">
+                    <div>
+                        <label for="file-upload" class="custom-file-upload">
+                            <i class="fa fa-cloud-upload"></i> Выбрать файл
+                        </label>
+                        <input id="file-upload" class="filedata" name="filedata"  type="file"/>
+                    </div>
+                </div>
 
+                <input id="submit" class="mybtn" type="submit"/>
+            </div>
+        </form>
+        <div style="margin-left: 20px" class="loader"></div>
+    </div>
+    <div id="result"></div>
+    <br>
+
+    <div id="mapid"></div>
     <script src="/script/russia.geojson.js"></script>
     <script src="/script/map_dev.js"></script>
     <script src="/script/myScript.js"></script>

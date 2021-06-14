@@ -1,5 +1,5 @@
 let geojson;
-let map = L.map('mapid').setView([60.8, 100], 3.5);
+let map = L.map('mapid').setView([67, 100], 3);
 let info = L.control();
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -19,19 +19,19 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
     this._div.innerHTML = (props ?
-        '<b>' + props.name + '</b><br />' + props.student + ' people / mi<sup>2</sup>'
+        '<b>' + props.name + '</b><br />' + props.student + ' people'
         : 'Наведите на область');
 };
 info.addTo(map);
 
 function getColor(d) {
-    return d > 1000 ? '#800026' :
-        d > 500  ? '#BD0026' :
-            d > 200  ? '#E31A1C' :
-                d > 100  ? '#FC4E2A' :
-                    d > 50   ? '#FD8D3C' :
-                        d > 20   ? '#FEB24C' :
-                            d > 10   ? '#FED976' :
+    return d > 50 ? '#800026' :
+        d > 40  ? '#BD0026' :
+            d > 30  ? '#E31A1C' :
+                d > 10  ? '#FC4E2A' :
+                    d > 5   ? '#FD8D3C' :
+                        d > 2   ? '#FEB24C' :
+                            d > 1   ? '#FED976' :
                                 '#fff7bc';
 }
 function style(feature) {
@@ -85,6 +85,7 @@ geojson = L.geoJson(statesData, {
     style: style,
     onEachFeature: onEachFeature
 }).addTo(map);
+
 
 
 

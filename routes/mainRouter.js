@@ -9,7 +9,6 @@ const storageConfig = multer.diskStorage({
     },
     filename:(req, file, callback)=>{
         callback(null,file.originalname);
-
     }
 })
 const upload = multer({storage:storageConfig})
@@ -17,5 +16,6 @@ const upload = multer({storage:storageConfig})
 
 mainRouter.get('/', startController.getStartPage)
 mainRouter.post('/addFile',upload.single('filedata'), startController.postAddFile)
+mainRouter.get('/getData', startController.getData)
 
 module.exports = mainRouter;

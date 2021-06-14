@@ -1,6 +1,7 @@
 #mapid {
-    height: 870px;
-
+    height: 500px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 .info {
     padding: 6px 8px;
@@ -13,4 +14,36 @@
 .info h4 {
     margin: 0 0 5px;
     color: #777;
+}
+
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.mybtn{
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
