@@ -63,9 +63,9 @@ $(window).load(function () {
 });
 
 $(document).ajaxStart(function () {
-    //$('#card-table').hide();
+    //$('.mainblock').hide();
     $('.loader').show();
 }).ajaxStop(function () {
     $('.loader').hide();
-    //$('#card-table').show();
+    //$('.mainblock').show();
 });

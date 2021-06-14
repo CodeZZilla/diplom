@@ -8,7 +8,7 @@ const schema = new Schema({
     specialty: {type: String},   //Специальность
     type: {type: String},        //Основание обучения
     status: {type: String},      //Статус
-    date: {type: String},          //Дата приказа о зачислении
+    date: {type: String},        //Дата приказа о зачислении
     year: {type: String},        //Год зачисления
     gender: {type: String},      //Пол
     country: {type: String},     //Страна

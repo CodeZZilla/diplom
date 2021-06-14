@@ -1,5 +1,5 @@
 let geojson;
-let map = L.map('mapid').setView([67, 100], 3);
+let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -85,7 +85,6 @@ geojson = L.geoJson(statesData, {
     style: style,
     onEachFeature: onEachFeature
 }).addTo(map);
-
 
 
 
