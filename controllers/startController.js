@@ -144,13 +144,13 @@ exports.getFormOfStudy = async function (req, res) {
             all = JSON.parse(data);
             let output = new Set();
             if (all.length !== 0) {
-                for (let item of all){
-                    try{
-                        if(item.FormOfStudy === undefined){
+                for (let item of all) {
+                    try {
+                        if (item.FormOfStudy === undefined) {
                             continue;
                         }
                         output.add(item.FormOfStudy.trim());
-                    }finally{
+                    } finally {
                         continue;
                     }
                 }
@@ -178,14 +178,63 @@ exports.getMinMaxMark = async function (req, res) {
             all = JSON.parse(data);
             let output = [];
             if (all.length !== 0) {
-                for (let item of all){
-                    if(item === undefined)
+                for (let item of all) {
+                    if (item === undefined)
                         continue;
-                    if(isNaN(item.AdmissionScore * 1))
+                    if (isNaN(item.AdmissionScore * 1))
                         continue;
                     output.push(item.AdmissionScore * 1);
                 }
-                res.status(200).send([Math.min.apply( null, output ), Math.max.apply( null, output )]);
+                res.status(200).send([Math.min.apply(null, output), Math.max.apply(null, output)]);
+            }
+        }
+    });
+}
+
+exports.getDataFilter = async function (req, res) {
+    let year = req.query.year;
+    let basisOfTraining = req.query.basisOfTraining;
+    let formOfStudy = req.query.formOfStudy;
+    let gender = req.query.gender;
+    let min = req.query.min;
+    let max = req.query.max;
+    console.log(req.query);
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = [];
+            all = JSON.parse(data);
+            let output = new Map();
+            if (all.length !== 0) {
+                for (let item of all) {
+                    if (item.Region === undefined
+                        || item.FormOfStudy === undefined
+                        || isNaN(item.AdmissionScore * 1)
+                        || item.EnrollmentYear === undefined)
+                        continue;
+
+                    if (item.EnrollmentYear === year
+                        && item.BasisOfTraining === basisOfTraining
+                        && item.FormOfStudy === formOfStudy
+                        && item.Gender === gender
+                        && (item.AdmissionScore * 1) >= min
+                        && (item.AdmissionScore * 1) <= max) {
+
+                        if (output.has(item.Region.trim())) {
+                            let val = output.get(item.Region.trim());
+                            output.set(item.Region.trim(), val + 1);
+                        } else {
+                            output.set(item.Region.trim(), 1);
+                        }
+                    }
+                }
+                let returnArr = [];
+                for (let [key, value] of output.entries()) {
+                    returnArr.push({region: key, count: value});
+                }
+                console.log(returnArr);
+                res.status(200).send(returnArr);
             }
         }
     });

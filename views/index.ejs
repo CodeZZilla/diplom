@@ -49,40 +49,28 @@
             <div id="result"></div>
         </form>
         <div class="selectdiv">
-            <select class="selectpicker" data-live-search="true" title="Год набора">
-                <option data-tokens="ketchup mustard">2019</option>
-                <option data-tokens="mustard">2020</option>
-                <option data-tokens="frosting">2021</option>
+            <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
             </select>
-            <select class="selectpicker" data-live-search="true" title="Основание обучения">
-                <option data-tokens="ketchup mustard">2019</option>
-                <option data-tokens="mustard">2020</option>
-                <option data-tokens="frosting">2021</option>
+            <select class="selectpicker" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
             </select>
-            <select class="selectpicker" data-live-search="false" title="Пол">
-                <option data-tokens="mustard">Мужской</option>
-                <option data-tokens="frosting">Женский</option>
+            <select class="selectpicker" data-live-search="false" id="genderId" name="gender" title="Пол">
+                <option value="null">Ничего не выбрано</option>
+                <option value="Мужской">Мужской</option>
+                <option value="Женский">Женский</option>
             </select>
-            <select class="selectpicker" data-live-search="true" title="Форма обучения">
-                <option data-tokens="ketchup mustard">2019</option>
-                <option data-tokens="mustard">2020</option>
-                <option data-tokens="frosting">2021</option>
+            <select class="selectpicker" data-live-search="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
             </select>
             <div style="display: flex">
                 <div class="range">
                     <input type="text" id="demo_0" name="my_range" value=""
                            data-type="double"
-                           data-min="0"
-                           data-max="100"
-                           data-from="20"
-                           data-to="50"
                            data-grid="true"/>
                 </div>
                 <div class="button_div">
-                    <button class="btn_main" type="submit">Применить</button>
+                    <button class="btn_main" type="button" onclick="btnGo()">Применить</button>
                     <div class="btn-particles">
                     </div>
-                    <button class="btn_main" type="submit">Сбросить</button>
+                    <button class="btn_main" type="button" onclick="btnClear()">Сбросить</button>
                     <div class="btn-particles">
                     </div>
                 </div>

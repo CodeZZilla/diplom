@@ -21,5 +21,6 @@ mainRouter.get('/getYears', startController.getYears)
 mainRouter.get('/getBasisOfTraining', startController.getBasisOfTraining)
 mainRouter.get('/getFormOfStudy', startController.getFormOfStudy)
 mainRouter.get('/getMinMaxMark', startController.getMinMaxMark)
+mainRouter.get('/getDataFilter', startController.getDataFilter)
 
 module.exports = mainRouter;
