@@ -20,6 +20,9 @@
   "devDependencies": {
     "multer": "^1.4.2",
     "multiparty": "^4.2.2",
+    "node-geocoder": "^3.27.0",
+    "nodejs-yandex-geocoder": "^1.0.5",
+    "opencage-api-client": "^1.0.0",
     "read-excel-file": "^5.1.0"
   }
 }
