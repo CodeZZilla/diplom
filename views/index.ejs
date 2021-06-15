@@ -57,7 +57,8 @@
             </form>
         </div>
     </div>
-    <div class="selectdiv">
+    <div style="display: flex">
+        <div class="selectdiv">
         <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
         </select>
         <select class="selectpicker" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
@@ -84,8 +85,19 @@
                 </div>
             </div>
         </div>
-    <br>
 </div>
+        <div style="display: block;padding: 20px; margin-right:25px;border: 1px solid #000;
+    border-radius: 5px;">
+            <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
+            </select>
+            <div class="button_div">
+                <button class="btn_main" type="button" onclick="btnClear()">Поиск</button>
+                <div class="btn-particles">
+                </div>
+            </div>
+        </div>
+
+    </div>
     <div id="mapid"></div>
 </div>
 
