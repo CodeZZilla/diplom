@@ -16,10 +16,16 @@
             crossorigin=""></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
           integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
     <link rel="stylesheet" href="/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/1.0.0-rc.2/esri-leaflet.js"></script>
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+
 
 </head>
 <body>
@@ -28,57 +34,59 @@
         <div class="preloader__item"></div>
         <div class="preloader__item"></div>
     </div>
-</div><div class="mainblock">
+</div>
+<div class="mainblock">
     <div class="h1loader">
-    <h1 style="text-align: center">Аналитическая система</h1>
-    <div style="margin-left: 20px" class="loader"></div>
+        <div style="margin-right: 15px;margin-top: 15px;" class="loader"></div>
+        <h1 style="text-align: center">Аналитическая система</h1>
+        <div style="display: flex; margin-left: 20px; margin-top: 10px;  justify-content: center">
+            <form action="/addFile" enctype="multipart/form-data" method="post" id="uploader">
+                <div style="display: flex">
+                    <div id="file-list">
+                        <div>
+                            <label for="file-upload" class="custom-file-upload">
+                                <i class="fa fa-cloud-upload"></i> Выбрать файл
+                            </label>
+                            <input id="file-upload" class="filedata" name="filedata" type="file"/>
+                        </div>
+                    </div>
+                    <input id="submit" class="mybtn" type="submit"/>
+                    <div id="result"></div>
+                </div>
+
+            </form>
+        </div>
     </div>
-    <div style="display: flex; margin-left: 30px">
-        <form action="/addFile" enctype="multipart/form-data" method="post" id="uploader">
-            <div style="display: flex">
-                <div id="file-list">
-                    <div>
-                        <label for="file-upload" class="custom-file-upload">
-                            <i class="fa fa-cloud-upload"></i> Выбрать файл
-                        </label>
-                        <input id="file-upload" class="filedata" name="filedata" type="file"/>
-                    </div>
-                </div>
-                <input id="submit" class="mybtn" type="submit"/>
+    <div class="selectdiv">
+        <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
+        </select>
+        <select class="selectpicker" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
+        </select>
+        <select class="selectpicker" data-live-search="false" id="genderId" name="gender" title="Пол">
+            <option value="null">Ничего не выбрано</option>
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+        </select>
+        <select class="selectpicker" data-live-search="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
+        </select>
+        <div style="display: flex">
+            <div class="range">
+                <input type="text" id="demo_0" name="my_range" value=""
+                       data-type="double"
+                       data-grid="true"/>
             </div>
-            <div id="result"></div>
-        </form>
-        <div class="selectdiv">
-            <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
-            </select>
-            <select class="selectpicker" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
-            </select>
-            <select class="selectpicker" data-live-search="false" id="genderId" name="gender" title="Пол">
-                <option value="null">Ничего не выбрано</option>
-                <option value="Мужской">Мужской</option>
-                <option value="Женский">Женский</option>
-            </select>
-            <select class="selectpicker" data-live-search="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
-            </select>
-            <div style="display: flex">
-                <div class="range">
-                    <input type="text" id="demo_0" name="my_range" value=""
-                           data-type="double"
-                           data-grid="true"/>
+            <div class="button_div">
+                <button class="btn_main" type="button" onclick="btnGo()">Применить</button>
+                <div class="btn-particles">
                 </div>
-                <div class="button_div">
-                    <button class="btn_main" type="button" onclick="btnGo()">Применить</button>
-                    <div class="btn-particles">
-                    </div>
-                    <button class="btn_main" type="button" onclick="btnClear()">Сбросить</button>
-                    <div class="btn-particles">
-                    </div>
+                <button class="btn_main" type="button" onclick="btnClear()">Сбросить</button>
+                <div class="btn-particles">
                 </div>
             </div>
         </div>
-    </div>
     <br>
     <div id="mapid"></div>
+</div>
 </div>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
