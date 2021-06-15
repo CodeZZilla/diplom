@@ -29,8 +29,10 @@
         <div class="preloader__item"></div>
     </div>
 </div><div class="mainblock">
+    <div class="h1loader">
     <h1 style="text-align: center">Аналитическая система</h1>
     <div style="margin-left: 20px" class="loader"></div>
+    </div>
     <div style="display: flex; margin-left: 30px">
         <form action="/addFile" enctype="multipart/form-data" method="post" id="uploader">
             <div style="display: flex">
@@ -66,21 +68,25 @@
                 <option data-tokens="mustard">2020</option>
                 <option data-tokens="frosting">2021</option>
             </select>
-            <div class="range">
-                <input type="text" id="demo_0" name="my_range" value=""
-                       data-type="double"
-                       data-min="0"
-                       data-max="100"
-                       data-from="20"
-                       data-to="50"
-                       data-grid="true"/>
-            </div>
-            <div class="btn-contain">
-                <button class="btn">Найти</button>
-                <div class="btn-particles">
+            <div style="display: flex">
+                <div class="range">
+                    <input type="text" id="demo_0" name="my_range" value=""
+                           data-type="double"
+                           data-min="0"
+                           data-max="100"
+                           data-from="20"
+                           data-to="50"
+                           data-grid="true"/>
+                </div>
+                <div class="button_div">
+                    <button class="btn_main" type="submit">Применить</button>
+                    <div class="btn-particles">
+                    </div>
+                    <button class="btn_main" type="submit">Сбросить</button>
+                    <div class="btn-particles">
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
     <br>
