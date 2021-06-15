@@ -17,5 +17,9 @@ const upload = multer({storage:storageConfig})
 mainRouter.get('/', startController.getStartPage)
 mainRouter.post('/addFile',upload.single('filedata'), startController.postAddFile)
 mainRouter.get('/getData', startController.getData)
+mainRouter.get('/getYears', startController.getYears)
+mainRouter.get('/getBasisOfTraining', startController.getBasisOfTraining)
+mainRouter.get('/getFormOfStudy', startController.getFormOfStudy)
+mainRouter.get('/getMinMaxMark', startController.getMinMaxMark)
 
 module.exports = mainRouter;
