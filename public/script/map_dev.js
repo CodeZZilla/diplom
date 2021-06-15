@@ -3,7 +3,7 @@ let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-    id: 'mapbox/light-v10',
+    id: 'mapbox/light-v9',
     tileSize: 512,
     zoomOffset: -1,
     accessToken:'pk.eyJ1Ijoia2l0dmFsZW50eW4xIiwiYSI6ImNrcHBxd2liMjBjYngycXM0aXl5MG8wZjkifQ.Lu-g6dONffgL4I0Cj1p5_A'
@@ -76,9 +76,6 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
         click: zoomToFeature
     });
-    if (feature.properties && feature.properties.name) {
-        layer.bindPopup(feature.properties.name);
-    }
 }
 
 geojson = L.geoJson(statesData, {

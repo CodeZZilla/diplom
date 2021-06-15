@@ -25,12 +25,19 @@ body {
     border-radius: 50%;
     width: 20px;
     height: 20px;
+    display: flex;
+    margin-top: 25px;
     animation: spin 2s linear infinite;
+
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+.h1loader{
+    display: flex;
+    justify-content: center;
 }
 
 .preloader {
@@ -136,5 +143,30 @@ input[type="file"] {
     padding-left: 40px;
     width: 200px;
 }
+.button_div {
+    position: initial;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn_main {
+    position: inherit;
+    margin-top: 15px;
+    margin-left: 20px;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    z-index: 10;
+    transition: 0.2s;
+    cursor: pointer;
+    width: 120px;
+    height: 40px;
+}
+
+
+
+
 
 
