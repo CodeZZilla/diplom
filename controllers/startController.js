@@ -2,8 +2,6 @@ const reader = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 const Note = require('../models/Note');
-const YandexGeocoder = require("nodejs-yandex-geocoder");
-const yandexGeocoder = new YandexGeocoder({apiKey: '98ff423c-6d27-4f1e-ab7f-81082a01a166'});
 
 
 exports.getStartPage = async function (req, res) {
@@ -19,29 +17,26 @@ exports.getData = async function (req, res) {
             all = JSON.parse(data);
             //console.log(all);
             let output = new Map();
-            for (let item of all){
-                if(item.Region === undefined)
-                    continue;
-                if(output.has(item.Region.trim())){
-                    let val = output.get(item.Region.trim());
-                    output.set(item.Region.trim(), val + 1);
-                }else {
-                    output.set(item.Region.trim(), 1);
+            if(all.length !== 0){
+                for (let item of all){
+                    if(item.Region === undefined)
+                        continue;
+                    if(output.has(item.Region.trim())){
+                        let val = output.get(item.Region.trim());
+                        output.set(item.Region.trim(), val + 1);
+                    }else {
+                        output.set(item.Region.trim(), 1);
+                    }
                 }
+                let returnArr = [];
+                for (let [key, value] of output.entries()) {
+                    returnArr.push({region: key, count: value});
+                }
+
+
+
+                res.status(200).send(returnArr);
             }
-            let returnArr = [];
-            for (let [key, value] of output.entries()) {
-                returnArr.push({region: key, count: value});
-            }
-
-            console.log(returnArr[0].region)
-            yandexGeocoder.resolve(returnArr[0].region, (err, collection) => {
-                if (err) throw err;
-                console.log(collection);
-            });
-
-
-            res.status(200).send(returnArr);
         }
     });
     //let all = await Note.find({});
