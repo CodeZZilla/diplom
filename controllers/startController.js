@@ -9,22 +9,22 @@ exports.getStartPage = async function (req, res) {
 };
 
 exports.getData = async function (req, res) {
-    let all = [];
-    fs.readFile('output.json', 'utf8' , (err, data) => {
+
+    fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
-        }else {
+        } else {
+            let all = [];
             all = JSON.parse(data);
-            //console.log(all);
             let output = new Map();
-            if(all.length !== 0){
-                for (let item of all){
-                    if(item.Region === undefined)
+            if (all.length !== 0) {
+                for (let item of all) {
+                    if (item.Region === undefined)
                         continue;
-                    if(output.has(item.Region.trim())){
+                    if (output.has(item.Region.trim())) {
                         let val = output.get(item.Region.trim());
                         output.set(item.Region.trim(), val + 1);
-                    }else {
+                    } else {
                         output.set(item.Region.trim(), 1);
                     }
                 }
@@ -32,9 +32,6 @@ exports.getData = async function (req, res) {
                 for (let [key, value] of output.entries()) {
                     returnArr.push({region: key, count: value});
                 }
-
-
-
                 res.status(200).send(returnArr);
             }
         }
@@ -76,15 +73,120 @@ exports.postAddFile = async function (req, res) {
     // вывести все
 
 
-
-    fs.writeFile(path.resolve('output.json'), JSON.stringify(temp),{ flag: 'w+' }, err => {
+    fs.writeFile(path.resolve('output.json'), JSON.stringify(temp), {flag: 'w+'}, err => {
         if (err) console.error(err);
     });
 
-    fs.unlink(path.resolve('uploads/' + req.file.originalname),function(err){
-        if(err) return console.log(err);
+    fs.unlink(path.resolve('uploads/' + req.file.originalname), function (err) {
+        if (err) return console.log(err);
         console.log('file deleted successfully');
     });
     res.send('Файл успешно загружен');
     //res.redirect('/');
 };
+
+exports.getYears = async function (req, res) {
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = [];
+            all = JSON.parse(data);
+            let output = new Set();
+            if (all.length !== 0) {
+                for (let item of all)
+                    output.add(item.EnrollmentYear.trim());
+
+                let returnArr = [];
+                for (let value of output) {
+                    returnArr.push(value);
+                }
+                returnArr.sort();
+                console.log(returnArr);
+
+                res.status(200).send(returnArr);
+            }
+        }
+    });
+}
+
+exports.getBasisOfTraining = async function (req, res) {
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = [];
+            all = JSON.parse(data);
+            let output = new Set();
+            if (all.length !== 0) {
+                for (let item of all)
+                    output.add(item.BasisOfTraining.trim());
+
+                let returnArr = [];
+                for (let value of output) {
+                    returnArr.push(value);
+                }
+                returnArr.sort();
+                console.log(returnArr);
+
+                res.status(200).send(returnArr);
+            }
+        }
+    });
+}
+
+exports.getFormOfStudy = async function (req, res) {
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = [];
+            all = JSON.parse(data);
+            let output = new Set();
+            if (all.length !== 0) {
+                for (let item of all){
+                    try{
+                        if(item.FormOfStudy === undefined){
+                            continue;
+                        }
+                        output.add(item.FormOfStudy.trim());
+                    }finally{
+                        continue;
+                    }
+                }
+
+
+                let returnArr = [];
+                for (let value of output) {
+                    returnArr.push(value);
+                }
+                returnArr.sort();
+                console.log(returnArr);
+
+                res.status(200).send(returnArr);
+            }
+        }
+    });
+}
+
+exports.getMinMaxMark = async function (req, res) {
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = [];
+            all = JSON.parse(data);
+            let output = [];
+            if (all.length !== 0) {
+                for (let item of all){
+                    if(item === undefined)
+                        continue;
+                    if(isNaN(item.AdmissionScore * 1))
+                        continue;
+                    output.push(item.AdmissionScore * 1);
+                }
+                res.status(200).send([Math.min.apply( null, output ), Math.max.apply( null, output )]);
+            }
+        }
+    });
+}
