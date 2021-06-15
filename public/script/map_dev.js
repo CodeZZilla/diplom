@@ -1,15 +1,13 @@
 let geojson;
 let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
-
+L.Control.geocoder().addTo(map);
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     id: 'mapbox/light-v9',
     tileSize: 512,
     zoomOffset: -1,
     accessToken:'pk.eyJ1Ijoia2l0dmFsZW50eW4xIiwiYSI6ImNrcHBxd2liMjBjYngycXM0aXl5MG8wZjkifQ.Lu-g6dONffgL4I0Cj1p5_A'
-}).addTo(map);
-
-
+}).addTo(map).bringToFront();
 
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
@@ -77,3 +75,4 @@ function onEachFeature(feature, layer) {
         click: zoomToFeature
     });
 }
+
