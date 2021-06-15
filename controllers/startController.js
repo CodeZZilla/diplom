@@ -119,8 +119,13 @@ exports.getBasisOfTraining = async function (req, res) {
             all = JSON.parse(data);
             let output = new Set();
             if (all.length !== 0) {
-                for (let item of all)
-                    output.add(item.BasisOfTraining.trim());
+                for (let item of all) {
+                    try {
+                        output.add(item.BasisOfTraining.trim());
+                    } finally {
+                        continue;
+                    }
+                }
 
                 let returnArr = [];
                 for (let value of output) {

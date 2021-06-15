@@ -26,6 +26,7 @@ $('#submit').bind('click', function (e) {
                         }
                     }
                 }
+                geojson.remove();
                 geojson = L.geoJson(statesData, {
                     style: style,
                     onEachFeature: onEachFeature
@@ -105,7 +106,6 @@ $(window).load(function () {
             onEachFeature: onEachFeature
         }).addTo(map);
     });
-
     render();
 });
 
@@ -147,11 +147,12 @@ function btnGo() {
                 }
             }
         }
-
+        geojson.remove();
         geojson = L.geoJson(statesData, {
             style: style,
             onEachFeature: onEachFeature
         }).addTo(map);
+        render();
     });
 }
 
