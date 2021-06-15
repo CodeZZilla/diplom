@@ -59,16 +59,16 @@
     </div>
     <div style="display: flex">
         <div class="selectdiv">
-        <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
+        <select class="selectpicker" data-size="10" data-actions-box="true" data-live-search="true" name="year" id="yearId" title="Год набора">
         </select>
-        <select class="selectpicker" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
+        <select class="selectpicker" data-size="10" data-actions-box="true" data-live-search="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
         </select>
-        <select class="selectpicker" data-live-search="false" id="genderId" name="gender" title="Пол">
+        <select class="selectpicker" data-size="10" data-actions-box="true" data-live-search="false" id="genderId" name="gender" title="Пол">
             <option value="null">Ничего не выбрано</option>
             <option value="Мужской">Мужской</option>
             <option value="Женский">Женский</option>
         </select>
-        <select class="selectpicker" data-live-search="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
+        <select class="selectpicker" data-size="10" data-actions-box="true" data-live-search="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
         </select>
         <div style="display: flex">
             <div class="range">
@@ -86,12 +86,11 @@
             </div>
         </div>
 </div>
-        <div style="display: block;padding: 20px; margin-right:25px;border: 1px solid #000;
-    border-radius: 5px;">
-            <select class="selectpicker" data-live-search="true" name="year" id="yearId" title="Год набора">
+        <div style="display: block;padding: 20px; margin-right:25px;border: 1px solid #000;border-radius: 5px; z-index: 10000">
+            <select class="selectpicker" data-actions-box="true" data-size="10" data-live-search="true" name="region" id="region" title="Регион">
             </select>
             <div class="button_div">
-                <button class="btn_main" type="button" onclick="btnClear()">Поиск</button>
+                <button class="btn_main" type="button" onclick="poisk()">Поиск</button>
                 <div class="btn-particles">
                 </div>
             </div>

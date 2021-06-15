@@ -42,9 +42,9 @@ $('#submit').bind('click', function (e) {
 function render() {
     $.get('/getYears', (data) => {
         $('#yearId').empty();
-        $('#yearId').append("<option value = 'null'>Нічого не вибрано</option>");
+        $('#yearId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
-            let option = "<option value = '" + v + "'>" + v + "</option>";
+            let option = "<option style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#yearId').append(option);
         });
         $('#yearId').selectpicker('refresh');
@@ -52,9 +52,9 @@ function render() {
 
     $.get('/getBasisOfTraining', (data) => {
         $('#basisOfTrainingId').empty();
-        $('#basisOfTrainingId').append("<option value = 'null'>Нічого не вибрано</option>");
+        $('#basisOfTrainingId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
-            let option = "<option value = '" + v + "'>" + v + "</option>";
+            let option = "<option style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#basisOfTrainingId').append(option);
         });
         $('#basisOfTrainingId').selectpicker('refresh');
@@ -62,9 +62,9 @@ function render() {
 
     $.get('/getFormOfStudy', (data) => {
         $('#formOfStudyId').empty();
-        $('#formOfStudyId').append("<option value = 'null'>Нічого не вибрано</option>");
+        $('#formOfStudyId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
-            let option = "<option value = '" + v + "'>" + v + "</option>";
+            let option = "<option  style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#formOfStudyId').append(option);
         });
         $('#formOfStudyId').selectpicker('refresh');
@@ -82,6 +82,7 @@ function render() {
             grid_snap: false
         });
     });
+
 }
 
 
@@ -89,9 +90,8 @@ $(window).load(function () {
     $('.loader').hide();
 
     $.get('/getData', (data) => {
-        let mass = []
-        for (let el of data) {
-            mass.push(el.region.split(' ')[0]);
+        for (let item of statesData.features) {
+            item.properties.student = 0;
         }
         for (let item of statesData.features) {
             for (let el of data) {
@@ -107,6 +107,13 @@ $(window).load(function () {
         }).addTo(map);
     });
     render();
+
+    $('#region').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
+    for (let item of statesData.features) {
+        let option = "<option style='max-width: 200px' value = '" + item.properties.name + "'>" + item.properties.name + "</option>";
+        $('#region').append(option);
+    }
+    $('#region').selectpicker('refresh');
 });
 
 $(document).ajaxStart(function () {
@@ -136,12 +143,12 @@ function btnGo() {
         '&max=' + max;
     $.get(str, (data) => {
         console.log(data);
-        let mass = [];
-        for (let el of data) {
-            mass.push(el.region.split(' ')[0]);
+        for (let item of statesData.features) {
+            item.properties.student = 0;
         }
         for (let item of statesData.features) {
             for (let el of data) {
+                console.log(item.properties.name.split(' ')[0] + ' === ' + el.region.split(' ')[0])
                 if (item.properties.name.split(' ')[0] === el.region.split(' ')[0]) {
                     item.properties.student = el.count;
                 }
@@ -153,12 +160,40 @@ function btnGo() {
             onEachFeature: onEachFeature
         }).addTo(map);
         render();
+        $('#genderId').selectpicker('refresh');
     });
 }
 
 function btnClear() {
-    $('#yearId').selectpicker('refresh');
-    $('#basisOfTrainingId').selectpicker('refresh');
-    $('#formOfStudyId').selectpicker('refresh');
-    $('#genderId').selectpicker('refresh');
+    $.get('/getData', (data) => {
+        for (let item of statesData.features) {
+            item.properties.student = 0;
+        }
+        for (let item of statesData.features) {
+            for (let el of data) {
+                if (item.properties.name.split(' ')[0] === el.region.split(' ')[0]) {
+                    item.properties.student = el.count;
+                }
+            }
+        }
+
+        geojson.remove();
+        geojson = L.geoJson(statesData, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+    });
+    render();
+}
+
+
+function poisk(){
+    let value = $('#region').val();
+    let feature;
+    for (let item of statesData.features){
+        if(item.properties.name === value){
+            feature = item;
+        }
+    }
+    map.fitBounds(feature.properties.cartodb_id);
 }

@@ -94,15 +94,17 @@ exports.getYears = async function (req, res) {
             all = JSON.parse(data);
             let output = new Set();
             if (all.length !== 0) {
-                for (let item of all)
+                for (let item of all){
+                    if(item.EnrollmentYear.trim() === '')
+                        continue;
                     output.add(item.EnrollmentYear.trim());
+                }
 
                 let returnArr = [];
                 for (let value of output) {
                     returnArr.push(value);
                 }
                 returnArr.sort();
-                console.log(returnArr);
 
                 res.status(200).send(returnArr);
             }
@@ -132,7 +134,6 @@ exports.getBasisOfTraining = async function (req, res) {
                     returnArr.push(value);
                 }
                 returnArr.sort();
-                console.log(returnArr);
 
                 res.status(200).send(returnArr);
             }
@@ -203,7 +204,6 @@ exports.getDataFilter = async function (req, res) {
     let gender = req.query.gender;
     let min = req.query.min;
     let max = req.query.max;
-    console.log(req.query);
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);

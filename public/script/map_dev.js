@@ -71,6 +71,7 @@ function zoomToFeature(e) {
 }
 
 function onEachFeature(feature, layer) {
+    feature.properties.cartodb_id = layer.getBounds();
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
