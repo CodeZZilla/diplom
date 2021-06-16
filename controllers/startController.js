@@ -19,14 +19,17 @@ exports.getData = async function (req, res) {
             let output = new Map();
             if (all.length !== 0) {
                 for (let item of all) {
-                    if (item.Region === undefined)
+                    if (item.Region === undefined) {
                         continue;
-                    if (output.has(item.Region.trim())) {
-                        let val = output.get(item.Region.trim());
-                        output.set(item.Region.trim(), val + 1);
                     } else {
-                        output.set(item.Region.trim(), 1);
+                        if (output.has(item.Region.trim().split(' ')[0])) {
+                            let val = output.get(item.Region.trim().split(' ')[0]);
+                            output.set(item.Region.trim().split(' ')[0], val + 1);
+                        } else {
+                            output.set(item.Region.trim().split(' ')[0], 1);
+                        }
                     }
+
                 }
                 let returnArr = [];
                 for (let [key, value] of output.entries()) {
@@ -40,7 +43,6 @@ exports.getData = async function (req, res) {
 };
 
 exports.postAddFile = async function (req, res) {
-    console.log(req.file);
     const file = reader.readFile(path.resolve('uploads/' + req.file.originalname))
 
     // масив записей
@@ -94,10 +96,14 @@ exports.getYears = async function (req, res) {
             all = JSON.parse(data);
             let output = new Set();
             if (all.length !== 0) {
-                for (let item of all){
-                    if(item.EnrollmentYear.trim() === '')
+                for (let item of all) {
+                    try {
+                        if (item.EnrollmentYear.trim() === '')
+                            continue;
+                        output.add(item.EnrollmentYear.trim());
+                    } finally {
                         continue;
-                    output.add(item.EnrollmentYear.trim());
+                    }
                 }
 
                 let returnArr = [];
@@ -110,7 +116,7 @@ exports.getYears = async function (req, res) {
             }
         }
     });
-}
+};
 
 exports.getBasisOfTraining = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
@@ -139,7 +145,7 @@ exports.getBasisOfTraining = async function (req, res) {
             }
         }
     });
-}
+};
 
 exports.getFormOfStudy = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
@@ -167,13 +173,12 @@ exports.getFormOfStudy = async function (req, res) {
                     returnArr.push(value);
                 }
                 returnArr.sort();
-                console.log(returnArr);
 
                 res.status(200).send(returnArr);
             }
         }
     });
-}
+};
 
 exports.getMinMaxMark = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
@@ -195,58 +200,99 @@ exports.getMinMaxMark = async function (req, res) {
             }
         }
     });
-}
+};
 
-exports.getDataFilter = async function (req, res) {
-    let year = req.query.year;
-    let basisOfTraining = req.query.basisOfTraining;
-    let formOfStudy = req.query.formOfStudy;
-    let gender = req.query.gender;
-    let min = req.query.min;
-    let max = req.query.max;
-    console.log(basisOfTraining);
+exports.postDataFilter = async function (req, res) {
+    let year = req.body.year === '' ? [] : req.body.year;
+    let basisOfTraining = req.body.basisOfTraining === '' ? [] : req.body.basisOfTraining;
+    let formOfStudy = req.body.formOfStudy === '' ? [] : req.body.formOfStudy;
+    let gender = req.body.gender === '' ? [] : req.body.gender;
+    let min = req.body.min;
+    let max = req.body.max;
+    console.log(req.body);
+    //res.send('ok');
     fs.readFile('output.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-        } else {
-            let all = [];
-            all = JSON.parse(data);
-            let output = new Map();
-            if (all.length !== 0) {
+        if (err) console.error(err);
+        let all = JSON.parse(data);
+        let output = new Map();
+        if (all.length !== 0) {
+            let findArr = [];
 
-
-                for (let item of all) {
-                    if (item.Region === undefined
-                        || item.FormOfStudy === undefined
-                        || isNaN(item.AdmissionScore * 1)
-                        || item.EnrollmentYear === undefined)
-                        continue;
-                    if(year )
-
-                    if (item.EnrollmentYear === year
-                        && item.BasisOfTraining === basisOfTraining
-                        && item.FormOfStudy === formOfStudy
-                        && item.Gender === gender
-                        && (item.AdmissionScore * 1) >= min
-                        && (item.AdmissionScore * 1) <= max) {
-
-                        if (output.has(item.Region.trim())) {
-                            let val = output.get(item.Region.trim());
-                            output.set(item.Region.trim(), val + 1);
-                        } else {
-                            output.set(item.Region.trim(), 1);
+            if(year.length === 0){
+                findArr = all;
+            }else {
+                for (let item of all){
+                    if(item.EnrollmentYear === undefined) continue;
+                    for (let el of year){
+                        if (item.EnrollmentYear === el){
+                            findArr.push(item);
                         }
                     }
                 }
+            }
 
-
-                let returnArr = [];
-                for (let [key, value] of output.entries()) {
-                    returnArr.push({region: key, count: value});
+            if(basisOfTraining.length !== 0){
+                let tmps = [];
+                for (let item of findArr){
+                    if(item.BasisOfTraining === undefined) continue;
+                    for (let el of basisOfTraining){
+                        if (item.BasisOfTraining === el){
+                            tmps.push(item);
+                        }
+                    }
                 }
-                console.log(returnArr);
-                res.status(200).send(returnArr);
+                findArr = tmps;
+            }
+
+            if(formOfStudy.length !== 0){
+                let tmps = [];
+                for (let item of findArr){
+                    if(item.FormOfStudy === undefined) continue;
+                    for (let el of formOfStudy){
+                        if (item.FormOfStudy === el){
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            if(gender.length !== 0){
+                let tmps = [];
+                for (let item of findArr){
+                    if(item.Gender === undefined) continue;
+                    for (let el of gender){
+                        if (item.Gender === el){
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            for (let item of findArr){
+                if(isNaN(item.AdmissionScore * 1) || item.Region === undefined) continue;
+
+                if((item.AdmissionScore * 1) >= min && (item.AdmissionScore * 1) <= max){
+                    if (output.has(item.Region.trim().split(' ')[0])) {
+                        let val = output.get(item.Region.trim().split(' ')[0]);
+                        output.set(item.Region.trim().split(' ')[0], val + 1);
+                    } else {
+                        output.set(item.Region.trim().split(' ')[0], 1);
+                    }
+                }
             }
         }
+        let returnArr = [];
+        for (let [key, value] of output.entries()) {
+            returnArr.push({region: key, count: value});
+        }
+        res.status(200).send(returnArr);
     });
+};
+
+exports.getGeoFromName = async function(req, res){
+    let name = req.query.name;
+    console.log(name);
+    res.send('ok');
 }

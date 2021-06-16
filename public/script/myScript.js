@@ -15,13 +15,12 @@ $('#submit').bind('click', function (e) {
         success: function (res) {
             $("#result").append(res);
             $.get('/getData', (data) => {
-                let mass = []
-                for (let el of data) {
-                    mass.push(el.region.split(' ')[0]);
+                for (let item of statesData.features) {
+                    item.properties.student = 0;
                 }
                 for (let item of statesData.features) {
                     for (let el of data) {
-                        if (item.properties.name.split(' ')[0] === el.region.split(' ')[0]) {
+                        if (item.properties.name.split(' ')[0] === el.region) {
                             item.properties.student = el.count;
                         }
                     }
@@ -42,7 +41,6 @@ $('#submit').bind('click', function (e) {
 function render() {
     $.get('/getYears', (data) => {
         $('#yearId').empty();
-        $('#yearId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
             let option = "<option style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#yearId').append(option);
@@ -52,7 +50,6 @@ function render() {
 
     $.get('/getBasisOfTraining', (data) => {
         $('#basisOfTrainingId').empty();
-        $('#basisOfTrainingId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
             let option = "<option style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#basisOfTrainingId').append(option);
@@ -62,7 +59,6 @@ function render() {
 
     $.get('/getFormOfStudy', (data) => {
         $('#formOfStudyId').empty();
-        $('#formOfStudyId').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
         $.each(data, function (k, v) {
             let option = "<option  style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
             $('#formOfStudyId').append(option);
@@ -88,14 +84,13 @@ function render() {
 
 $(window).load(function () {
     $('.loader').hide();
-
     $.get('/getData', (data) => {
         for (let item of statesData.features) {
             item.properties.student = 0;
         }
         for (let item of statesData.features) {
             for (let el of data) {
-                if (item.properties.name.split(' ')[0] === el.region.split(' ')[0]) {
+                if (item.properties.name.split(' ')[0] === el.region) {
                     item.properties.student = el.count;
                 }
             }
@@ -108,7 +103,6 @@ $(window).load(function () {
     });
     render();
 
-    $('#region').append("<option style='max-width: 200px' value = 'null'>Ничего не выбрано</option>");
     for (let item of statesData.features) {
         let option = "<option style='max-width: 200px' value = '" + item.properties.name + "'>" + item.properties.name + "</option>";
         $('#region').append(option);
@@ -135,32 +129,35 @@ function btnGo() {
     let min = $inp.data("from");   // input data-from attribute
     let max = $inp.data("to");       // input data-to attribute
 
-    let str = '/getDataFilter?year=' + year +
-        '&basisOfTraining=' + basisOfTraining +
-        '&formOfStudy=' + formOfStudy +
-        '&gender=' + gender +
-        '&min=' + min +
-        '&max=' + max;
-    $.get(str, (data) => {
-        console.log(data);
-        for (let item of statesData.features) {
-            item.properties.student = 0;
-        }
-        for (let item of statesData.features) {
-            for (let el of data) {
-                console.log(item.properties.name.split(' ')[0] + ' === ' + el.region.split(' ')[0])
-                if (item.properties.name.split(' ')[0] === el.region.split(' ')[0]) {
-                    item.properties.student = el.count;
+    $.ajax({
+        url: '/postDataFilter',                               /* Куда пойдет запрос */
+        method: 'post',                                           /* Метод передачи (post или get) */
+        dataType: 'json',                                         /* Тип данных в ответе (xml, json, script, html). */
+        data: {
+            year: year,
+            basisOfTraining: basisOfTraining,
+            formOfStudy: formOfStudy,
+            gender: gender,
+            min: min,
+            max: max
+        },
+        success: function (data) {                    /* функция которая будет выполнена после успешного запроса.  */
+            for (let item of statesData.features) {
+                item.properties.student = 0;
+            }
+            for (let item of statesData.features) {
+                for (let el of data) {
+                    if (item.properties.name.split(' ')[0] === el.region) {
+                        item.properties.student = el.count;
+                    }
                 }
             }
+            geojson.remove();
+            geojson = L.geoJson(statesData, {
+                style: style,
+                onEachFeature: onEachFeature
+            }).addTo(map);
         }
-        geojson.remove();
-        geojson = L.geoJson(statesData, {
-            style: style,
-            onEachFeature: onEachFeature
-        }).addTo(map);
-        render();
-        $('#genderId').selectpicker('refresh');
     });
 }
 
@@ -183,17 +180,21 @@ function btnClear() {
             onEachFeature: onEachFeature
         }).addTo(map);
     });
-    render();
 }
 
 
-function poisk(){
+function poisk() {
     let value = $('#region').val();
     let feature;
-    for (let item of statesData.features){
-        if(item.properties.name === value){
+    for (let item of statesData.features) {
+        if (item.properties.name === value) {
             feature = item;
         }
     }
+
+    $.get('/getGeoFromName?name=' + value.split(' ')[0], (data) => {
+
+    });
+
     map.fitBounds(feature.properties.cartodb_id);
 }
