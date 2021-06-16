@@ -204,7 +204,7 @@ exports.getDataFilter = async function (req, res) {
     let gender = req.query.gender;
     let min = req.query.min;
     let max = req.query.max;
-    console.log();
+    console.log(basisOfTraining);
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
@@ -221,6 +221,7 @@ exports.getDataFilter = async function (req, res) {
                         || isNaN(item.AdmissionScore * 1)
                         || item.EnrollmentYear === undefined)
                         continue;
+                    if(year )
 
                     if (item.EnrollmentYear === year
                         && item.BasisOfTraining === basisOfTraining
