@@ -204,6 +204,7 @@ exports.getDataFilter = async function (req, res) {
     let gender = req.query.gender;
     let min = req.query.min;
     let max = req.query.max;
+    console.log();
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
@@ -212,6 +213,8 @@ exports.getDataFilter = async function (req, res) {
             all = JSON.parse(data);
             let output = new Map();
             if (all.length !== 0) {
+
+
                 for (let item of all) {
                     if (item.Region === undefined
                         || item.FormOfStudy === undefined
@@ -234,6 +237,8 @@ exports.getDataFilter = async function (req, res) {
                         }
                     }
                 }
+
+
                 let returnArr = [];
                 for (let [key, value] of output.entries()) {
                     returnArr.push({region: key, count: value});
