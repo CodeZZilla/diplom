@@ -1,25 +1,29 @@
 #mapid {
-    height:410px;
+    height: 390px;
     width: 90%;
     margin-left: 15px;
     margin-right: 15px;
     margin-top: 15px;
- }
-h1{
+}
+
+h1 {
     margin-top: 10px;
 }
+
 .info {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     background: white;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 }
+
 .info h4 {
     margin: 0 0 5px;
     color: #777;
 }
+
 body {
     margin: 0;
 }
@@ -37,10 +41,15 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
-.h1loader{
+
+.h1loader {
     display: flex;
     justify-content: center;
 }
@@ -118,6 +127,7 @@ body {
 input[type="file"] {
     display: none;
 }
+
 .custom-file-upload {
     border: 1px solid #ccc;
     display: inline-block;
@@ -126,7 +136,7 @@ input[type="file"] {
     padding: 15px 12px 6px;
 }
 
-.mybtn{
+.mybtn {
     border: 1px solid #ccc;
     display: inline-block;
     padding: 6px 12px;
@@ -134,21 +144,22 @@ input[type="file"] {
     height: 50px;
 }
 
-.selectdiv{
+.selectdiv {
     padding: 20px;
     margin-left: 20px;
     margin-right: 20px;
     border: 1px solid #000;
     border-radius: 10px;
     width: 85%;
+    max-width: 900px;
 }
 
-.range{
+.range {
     width: 650px;
     margin-left: 25px;
 }
 
-#result{
+#result {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     padding-left: 20px;
     width: 200px;
@@ -177,11 +188,56 @@ input[type="file"] {
     height: 40px;
 }
 
-label{
+label {
     display: inline-block;
     margin-right: 0px;
 }
 
+.leaflet-popup-tip-container {
+    width: 40px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.leaflet-popup-tip-container {
+    /* margin: 0 auto; */
+    width: 40px;
+    height: 20px;
+    /* position: relative; */
+    overflow: hidden;
+}
+
+.map {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.imgmap {
+    max-height: 450px;
+    height: 420px;
+    padding: 10px;
+}
+
+.div-parent {
+    display: flex;
+    width: 200px;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+.h4-child {
+    min-width: 56px;
+    font-weight: bold;
+    display: block;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.div-child {
+    max-width: 133px;
+    flex: 1;
+}
 
 
 

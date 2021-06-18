@@ -1,3 +1,5 @@
+let saveGeo = false;
+
 $('#submit').bind('click', function (e) {
     e.preventDefault();
     $("#result").html("")
@@ -25,18 +27,79 @@ $('#submit').bind('click', function (e) {
                         }
                     }
                 }
-                geojson.remove();
+
                 geojson = L.geoJson(statesData, {
                     style: style,
                     onEachFeature: onEachFeature
                 }).addTo(map);
-                console.log(data);
+                saveGeo = false;
             });
         }
     });
 
 });
 
+//метод для выборки уникальных элементов в array
+function unique(arr) {
+    let result = [];
+    for (let str of arr) {
+        if (!result.includes(str)) {
+            result.push(str);
+        }
+    }
+    return result;
+}
+
+function numbersUp(outputArr) {
+    numbers = [];
+
+    let temps = [];
+    for (let item of outputArr) {
+        temps.push(item.count);
+    }
+    temps.sort((a, b) => a - b)
+    temps = unique(temps);
+
+    if (temps.length === 7) {
+        numbers.push(1);
+        numbers.push(10);
+        numbers.push(20);
+        numbers.push(50);
+        numbers.push(100);
+        numbers.push(150);
+        numbers.push(200);
+    } else if (temps.length < 7 && temps.length > 0) {
+        numbers.push(1);
+        numbers.push(10);
+        numbers.push(20);
+        numbers.push(50);
+        numbers.push(100);
+        numbers.push(150);
+        numbers.push(200);
+    } else if (temps.length === 0) {
+        numbers.push(100);
+        numbers.push(50);
+        numbers.push(20);
+        numbers.push(10);
+        numbers.push(5);
+        numbers.push(1);
+        numbers.push(0);
+    } else {
+        numbers.push(temps[0]);
+
+        let x = Math.round(temps.length / 2);
+        numbers.push(temps[x]);
+
+        numbers.push(temps[x + Math.round(x / 2)]);
+        numbers.push(temps[x + Math.round(x / 3 * 2)]);
+
+        numbers.push(temps[Math.round(x / 3)]);
+        numbers.push(temps[Math.round(x / 3 * 2)]);
+
+        numbers.push(temps[temps.length - 1] - 1);
+    }
+
+}
 
 function render() {
     $.get('/getYears', (data) => {
@@ -64,6 +127,15 @@ function render() {
             $('#formOfStudyId').append(option);
         });
         $('#formOfStudyId').selectpicker('refresh');
+    });
+
+    $.get('/getSpecialty', (data) => {
+        $('#specialtyId').empty();
+        $.each(data, function (k, v) {
+            let option = "<option  style='max-width: 200px' value = '" + v + "'>" + v + "</option>";
+            $('#specialtyId').append(option);
+        });
+        $('#specialtyId').selectpicker('refresh');
     });
 
     $.get('/getMinMaxMark', (data) => {
@@ -96,6 +168,7 @@ $(window).load(function () {
             }
         }
 
+        numbersUp(data);
         geojson = L.geoJson(statesData, {
             style: style,
             onEachFeature: onEachFeature
@@ -123,11 +196,11 @@ function btnGo() {
     let basisOfTraining = $('#basisOfTrainingId').val();
     let formOfStudy = $('#formOfStudyId').val();
     let gender = $('#genderId').val();
+    let specialty = $('#specialtyId').val();
 
     let $inp = $('#demo_0');
-    let v = $inp.prop("value");     // input value in format FROM;TO
-    let min = $inp.data("from");   // input data-from attribute
-    let max = $inp.data("to");       // input data-to attribute
+    let min = $inp.data("from");
+    let max = $inp.data("to");
 
     $.ajax({
         url: '/postDataFilter',                               /* Куда пойдет запрос */
@@ -138,6 +211,7 @@ function btnGo() {
             basisOfTraining: basisOfTraining,
             formOfStudy: formOfStudy,
             gender: gender,
+            specialty: specialty,
             min: min,
             max: max
         },
@@ -152,6 +226,8 @@ function btnGo() {
                     }
                 }
             }
+
+            numbersUp(data);
             geojson.remove();
             geojson = L.geoJson(statesData, {
                 style: style,
@@ -162,6 +238,8 @@ function btnGo() {
 }
 
 function btnClear() {
+    markers.forEach(el => el.remove());
+    markers = [];
     $.get('/getData', (data) => {
         for (let item of statesData.features) {
             item.properties.student = 0;
@@ -174,6 +252,7 @@ function btnClear() {
             }
         }
 
+        numbersUp(data);
         geojson.remove();
         geojson = L.geoJson(statesData, {
             style: style,
@@ -181,7 +260,6 @@ function btnClear() {
         }).addTo(map);
     });
 }
-
 
 function poisk() {
     let value = $('#region').val();
@@ -192,9 +270,72 @@ function poisk() {
         }
     }
 
-    $.get('/getGeoFromName?name=' + value.split(' ')[0], (data) => {
+    let year = $('#yearId').val();
+    let basisOfTraining = $('#basisOfTrainingId').val();
+    let formOfStudy = $('#formOfStudyId').val();
+    let gender = $('#genderId').val();
+    let specialty = $('#specialtyId').val();
 
+    let $inp = $('#demo_0');
+    let min = $inp.data("from");
+    let max = $inp.data("to");
+
+    $.ajax({
+        url: '/postGeoFromName',                               /* Куда пойдет запрос */
+        method: 'post',                                           /* Метод передачи (post или get) */
+        dataType: 'json',                                         /* Тип данных в ответе (xml, json, script, html). */
+        data: {
+            year: year,
+            basisOfTraining: basisOfTraining,
+            formOfStudy: formOfStudy,
+            gender: gender,
+            specialty: specialty,
+            min: min,
+            max: max,
+            nameRegion: value.split(' ')[0]
+        },
+        success: function (data) {
+            markers.forEach(el => el.remove());
+            markers = [];
+            console.log(data);
+            let countSum = 0;
+            for (let item of data) {
+                try {
+                    countSum += item.count;
+                    let marker = L.marker([item.geo[0].latitude, item.geo[0].longitude]).addTo(map);
+                    marker.bindTooltip("<b>" + item.region + "</b><br>" + item.count + " people").openPopup();
+                    markers.push(marker);
+                } catch (e) {
+                    continue;
+                }
+            }
+
+            for (let item of statesData.features) {
+                item.properties.student = 0;
+            }
+            for (let item of statesData.features) {
+                if (item.properties.name === value) {
+                    item.properties.student = countSum;
+                }
+            }
+
+            numbersUp(data);
+            geojson.remove();
+            geojson = L.geoJson(statesData, {
+                style: style,
+                onEachFeature: onEachFeature
+            }).addTo(map);
+
+            map.fitBounds(feature.properties.cartodb_id);
+        }
     });
 
-    map.fitBounds(feature.properties.cartodb_id);
+
 }
+
+// function saveGeo(){
+//     if(!saveGeo){
+//
+//         saveGeo = true;
+//     }
+// }

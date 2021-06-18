@@ -15,7 +15,7 @@
           integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
     <link rel="stylesheet" href="/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+
     <link rel="stylesheet" type="text/css"
           href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
@@ -25,14 +25,14 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
             crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
+    <link rel="stylesheet" href="/css/style.css">
 
 
 </head>
 <body>
-<div class="preloader" style="z-index: 10001">
+<div class="preloader" style="z-index: 100001">
     <div class="preloader__row">
         <div class="preloader__item"></div>
         <div class="preloader__item"></div>
@@ -59,37 +59,56 @@
 
             </form>
         </div>
+        <button class="btn_main" style="width: 200px; margin-left: 20px;"
+                type="button" onclick="">Сохранить геоданные
+        </button>
     </div>
     <div style="display: flex">
         <div class="selectdiv">
-        <select class="selectpicker" data-size="10" data-live-search="true" multiple data-actions-box="true" name="year" id="yearId" title="Год набора">
-        </select>
-        <select class="selectpicker" data-size="10" data-live-search="true" multiple data-actions-box="true" title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
-        </select>
-        <select class="selectpicker" data-size="10" data-live-search="true" multiple data-actions-box="true" title="Пол" id="genderId" name="gender">
-            <option value="Мужской">Мужской</option>
-            <option value="Женский">Женский</option>
-        </select>
-        <select class="selectpicker" data-size="10" data-live-search="true" multiple data-actions-box="true" title="Форма обучения" id="formOfStudyId" name="formOfStudy">
-        </select>
-        <div style="display: flex">
-            <div class="range">
-                <input type="text" id="demo_0" name="my_range" value=""
-                       data-type="double"
-                       data-grid="true"/>
+            <div style="display: flex; max-width: 1060px">
+                <select class="selectpicker" data-width="160px" data-size="10" data-live-search="true" multiple
+                        data-actions-box="true"
+                        name="year" id="yearId" title="Год набора">
+                </select>
+                <select class="selectpicker" data-width="160px" data-size="10" data-live-search="true" multiple
+                        data-actions-box="true"
+                        title="Основание обучения" id="basisOfTrainingId" name="basisOfTraining">
+                </select>
+                <select class="selectpicker" data-width="160px" data-size="10" data-live-search="true" multiple
+                        data-actions-box="true"
+                        title="Специальность" id="specialtyId" name="specialty">
+                </select>
+                <select class="selectpicker" data-width="160px" data-size="10" data-live-search="true" multiple
+                        data-actions-box="true"
+                        title="Пол" id="genderId" name="gender">
+                    <option value="Мужской">Мужской</option>
+                    <option value="Женский">Женский</option>
+                </select>
+                <select class="selectpicker" data-width="160px" data-size="10" data-live-search="true" multiple
+                        data-actions-box="true"
+                        title="Форма обучения" id="formOfStudyId" name="formOfStudy">
+                </select>
             </div>
-            <div class="button_div">
-                <button class="btn_main" type="button" onclick="btnGo()">Применить</button>
-                <div class="btn-particles">
+            <div style="display: flex">
+                <p style="padding-bottom: 2%; padding-top: 2%">Балы: </p>
+                <div class="range">
+                    <input type="text" id="demo_0" name="my_range" value=""
+                           data-type="double"
+                           data-grid="true"/>
                 </div>
-                <button class="btn_main" type="button" onclick="btnClear()">Сбросить</button>
-                <div class="btn-particles">
+                <div class="button_div">
+                    <button class="btn_main" type="button" onclick="btnGo()">Применить</button>
+                    <div class="btn-particles">
+                    </div>
+                    <button class="btn_main" type="button" onclick="btnClear()">Сбросить</button>
+                    <div class="btn-particles">
+                    </div>
                 </div>
             </div>
         </div>
-</div>
         <div style="display: block;padding: 20px; margin-right:25px;border: 1px solid #000;border-radius: 5px; z-index: 10000">
-            <select class="selectpicker" data-actions-box="true" data-size="10" data-live-search="true" name="region" id="region" title="Регион">
+            <select class="selectpicker" data-actions-box="true" data-size="10" data-live-search="true" name="region"
+                    id="region" title="Регион">
             </select>
             <div class="button_div">
                 <button class="btn_main" type="button" onclick="poisk()">Поиск</button>
@@ -98,7 +117,44 @@
             </div>
         </div>
     </div>
-    <div id="mapid"></div>
+    <div class="map">
+        <div id="mapid"></div>
+        <div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-7">> 1000</h4>
+                <div class="div-child" style="background-color: #800026"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-6">> 500</h4>
+                <div class="div-child" style="background-color: #BD0026"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-5">> 100</h4>
+                <div class="div-child" style="background-color: #E31A1C"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-4">> 50</h4>
+                <div class="div-child" style="background-color: #FC4E2A"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-3">> 20</h4>
+                <div class="div-child" style="background-color: #FD8D3C"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-2">> 5</h4>
+                <div class="div-child" style="background-color: #FEB24C"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-1">> 1</h4>
+                <div class="div-child" style="background-color: #FED976"></div>
+            </div>
+            <div class="div-parent">
+                <h4 class="h4-child" id="h4-0">0</h4>
+                <div class="div-child" style="background-color: #fff7bc"></div>
+            </div>
+            <!--            <img class="imgmap" src="/img/color.jpg" alt="">-->
+        </div>
+    </div>
 </div>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
@@ -118,11 +174,6 @@
             document.body.classList.remove('loaded_hiding');
         }, 100);
     }
-</script>
-
-<script>
-
-
 </script>
 
 </body>

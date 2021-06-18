@@ -1,7 +1,13 @@
 const reader = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const nodeGeocoder = require('node-geocoder');
 const Note = require('../models/Note');
+let options = {
+    provider: 'openstreetmap'
+};
+
+let geoCoder = nodeGeocoder(options);
 
 
 exports.getStartPage = async function (req, res) {
@@ -14,8 +20,7 @@ exports.getData = async function (req, res) {
         if (err) {
             console.error(err);
         } else {
-            let all = [];
-            all = JSON.parse(data);
+            let all = JSON.parse(data);
             let output = new Map();
             if (all.length !== 0) {
                 for (let item of all) {
@@ -180,13 +185,41 @@ exports.getFormOfStudy = async function (req, res) {
     });
 };
 
+exports.getSpecialty = async function (req, res) {
+    fs.readFile('output.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            let all = JSON.parse(data);
+            let output = new Set();
+            if (all.length !== 0) {
+                for (let item of all) {
+                    try {
+                        if (item.Specialty === undefined) continue;
+                        output.add(item.Specialty.trim());
+                    } finally {
+                        continue;
+                    }
+                }
+
+                let returnArr = [];
+                for (let value of output) {
+                    returnArr.push(value);
+                }
+                returnArr.sort();
+
+                res.status(200).send(returnArr);
+            }
+        }
+    });
+};
+
 exports.getMinMaxMark = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
         } else {
-            let all = [];
-            all = JSON.parse(data);
+            let all = JSON.parse(data);
             let output = [];
             if (all.length !== 0) {
                 for (let item of all) {
@@ -207,10 +240,10 @@ exports.postDataFilter = async function (req, res) {
     let basisOfTraining = req.body.basisOfTraining === '' ? [] : req.body.basisOfTraining;
     let formOfStudy = req.body.formOfStudy === '' ? [] : req.body.formOfStudy;
     let gender = req.body.gender === '' ? [] : req.body.gender;
+    let specialty = req.body.specialty === '' ? [] : req.body.specialty;
     let min = req.body.min;
     let max = req.body.max;
     console.log(req.body);
-    //res.send('ok');
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) console.error(err);
         let all = JSON.parse(data);
@@ -218,25 +251,25 @@ exports.postDataFilter = async function (req, res) {
         if (all.length !== 0) {
             let findArr = [];
 
-            if(year.length === 0){
+            if (year.length === 0) {
                 findArr = all;
-            }else {
-                for (let item of all){
-                    if(item.EnrollmentYear === undefined) continue;
-                    for (let el of year){
-                        if (item.EnrollmentYear === el){
+            } else {
+                for (let item of all) {
+                    if (item.EnrollmentYear === undefined) continue;
+                    for (let el of year) {
+                        if (item.EnrollmentYear === el) {
                             findArr.push(item);
                         }
                     }
                 }
             }
 
-            if(basisOfTraining.length !== 0){
+            if (basisOfTraining.length !== 0) {
                 let tmps = [];
-                for (let item of findArr){
-                    if(item.BasisOfTraining === undefined) continue;
-                    for (let el of basisOfTraining){
-                        if (item.BasisOfTraining === el){
+                for (let item of findArr) {
+                    if (item.BasisOfTraining === undefined) continue;
+                    for (let el of basisOfTraining) {
+                        if (item.BasisOfTraining === el) {
                             tmps.push(item);
                         }
                     }
@@ -244,12 +277,12 @@ exports.postDataFilter = async function (req, res) {
                 findArr = tmps;
             }
 
-            if(formOfStudy.length !== 0){
+            if (specialty.length !== 0) {
                 let tmps = [];
-                for (let item of findArr){
-                    if(item.FormOfStudy === undefined) continue;
-                    for (let el of formOfStudy){
-                        if (item.FormOfStudy === el){
+                for (let item of findArr) {
+                    if (item.Specialty === undefined) continue;
+                    for (let el of specialty) {
+                        if (item.Specialty === el) {
                             tmps.push(item);
                         }
                     }
@@ -257,12 +290,12 @@ exports.postDataFilter = async function (req, res) {
                 findArr = tmps;
             }
 
-            if(gender.length !== 0){
+            if (formOfStudy.length !== 0) {
                 let tmps = [];
-                for (let item of findArr){
-                    if(item.Gender === undefined) continue;
-                    for (let el of gender){
-                        if (item.Gender === el){
+                for (let item of findArr) {
+                    if (item.FormOfStudy === undefined) continue;
+                    for (let el of formOfStudy) {
+                        if (item.FormOfStudy === el) {
                             tmps.push(item);
                         }
                     }
@@ -270,10 +303,23 @@ exports.postDataFilter = async function (req, res) {
                 findArr = tmps;
             }
 
-            for (let item of findArr){
-                if(isNaN(item.AdmissionScore * 1) || item.Region === undefined) continue;
+            if (gender.length !== 0) {
+                let tmps = [];
+                for (let item of findArr) {
+                    if (item.Gender === undefined) continue;
+                    for (let el of gender) {
+                        if (item.Gender === el) {
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
 
-                if((item.AdmissionScore * 1) >= min && (item.AdmissionScore * 1) <= max){
+            for (let item of findArr) {
+                if (isNaN(item.AdmissionScore * 1) || item.Region === undefined) continue;
+
+                if ((item.AdmissionScore * 1) >= min && (item.AdmissionScore * 1) <= max) {
                     if (output.has(item.Region.trim().split(' ')[0])) {
                         let val = output.get(item.Region.trim().split(' ')[0]);
                         output.set(item.Region.trim().split(' ')[0], val + 1);
@@ -291,8 +337,170 @@ exports.postDataFilter = async function (req, res) {
     });
 };
 
-exports.getGeoFromName = async function(req, res){
-    let name = req.query.name;
-    console.log(name);
-    res.send('ok');
+exports.postGeoFromName = async function (req, res) {
+    let year = req.body.year === '' ? [] : req.body.year;
+    let name = req.body.nameRegion;
+    let basisOfTraining = req.body.basisOfTraining === '' ? [] : req.body.basisOfTraining;
+    let formOfStudy = req.body.formOfStudy === '' ? [] : req.body.formOfStudy;
+    let gender = req.body.gender === '' ? [] : req.body.gender;
+    let specialty = req.body.specialty === '' ? [] : req.body.specialty;
+    let min = req.body.min;
+    let max = req.body.max;
+
+    fs.readFile('output.json', 'utf8', async (err, data) => {
+        if (err) console.error(err);
+        let all = JSON.parse(data);
+        let output = new Map();
+        if (all.length !== 0) {
+            let findArr = [];
+
+            if (year.length === 0) {
+                findArr = all;
+            } else {
+                for (let item of all) {
+                    if (item.EnrollmentYear === undefined) continue;
+                    for (let el of year) {
+                        if (item.EnrollmentYear === el) {
+                            findArr.push(item);
+                        }
+                    }
+                }
+            }
+
+            if (basisOfTraining.length !== 0) {
+                let tmps = [];
+                for (let item of findArr) {
+                    if (item.BasisOfTraining === undefined) continue;
+                    for (let el of basisOfTraining) {
+                        if (item.BasisOfTraining === el) {
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            if (specialty.length !== 0) {
+                let tmps = [];
+                for (let item of findArr) {
+                    if (item.Specialty === undefined) continue;
+                    for (let el of specialty) {
+                        if (item.Specialty === el) {
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            if (formOfStudy.length !== 0) {
+                let tmps = [];
+                for (let item of findArr) {
+                    if (item.FormOfStudy === undefined) continue;
+                    for (let el of formOfStudy) {
+                        if (item.FormOfStudy === el) {
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            if (gender.length !== 0) {
+                let tmps = [];
+                for (let item of findArr) {
+                    if (item.Gender === undefined) continue;
+                    for (let el of gender) {
+                        if (item.Gender === el) {
+                            tmps.push(item);
+                        }
+                    }
+                }
+                findArr = tmps;
+            }
+
+            for (let item of findArr) {
+                if (isNaN(item.AdmissionScore * 1) || item.Region === undefined) continue;
+
+                if (item.Region.trim().split(' ')[0] === name) {
+                    if ((item.AdmissionScore * 1) >= min && (item.AdmissionScore * 1) <= max) {
+
+                        let adress = (item.Region.trim().split(' ')[0]) +
+                            (item.District !== undefined ? (', ' + item.District.trim()) : '') +
+                            (item.Locality !== undefined ? (', ' + item.Locality.trim()) : '');
+
+                        if (output.has(adress)) {
+                            let val = output.get(adress);
+                            output.set(adress, val + 1);
+                        } else {
+                            output.set(adress, 1);
+                        }
+                    }
+                }
+            }
+        }
+        let returnArr = [];
+
+        let j = 1;
+        for (let [key, value] of output.entries()) {
+            let el = '';
+            try {
+                el = await geoCoder.geocode(key);
+            } finally {
+                returnArr.push({region: key, geo: el, count: value});
+                console.log(j++);
+            }
+        }
+
+        res.status(200).send(returnArr);
+    });
+}
+
+exports.getGeoSave = function (req, res) {
+
+    fs.readFile('output.json', 'utf8', async (err, data) => {
+        if (err) console.error(err);
+        // fs.readFile('geoInfoMap.json', 'utf8', async (err, jsonStr) => {
+        //     if (err) console.error(err);
+        //     let mapFromFile = JSON.parse(jsonStr);
+        //     let merged = new Map([...mapFromFile, ...returnMap]);
+        //
+        // });
+
+        let all = JSON.parse(data);
+        let output = new Set();
+        if (all.length !== 0) {
+            for (let item of all) {
+                if (item.Region === undefined) continue;
+
+                let adress = (item.Region.trim().split(' ')[0]) +
+                    (item.District !== undefined ? (', ' + item.District.trim()) : '') +
+                    (item.Locality !== undefined ? (', ' + item.Locality.trim()) : '');
+
+                if (output.has(adress)) {
+                    output.add(adress);
+                } else {
+                    output.add(adress);
+                }
+            }
+            console.log(output);
+        }
+
+        let returnMap = new Map();
+        let j = 1;
+        for (let item of output.values()) {
+            let el = '';
+            try {
+                el = await geoCoder.geocode(item);
+            } finally {
+                returnMap.set(item, el);
+                console.log(j++);
+            }
+        }
+
+        console.log(returnMap);
+        fs.writeFileSync(path.resolve('geoInfoMap.json'), JSON.stringify(returnMap.entries()), {flag: 'w+'});
+        res.status(200).send(returnMap);
+    });
+
 }

@@ -1,6 +1,9 @@
 let geojson;
 let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
+let markers = [];
+let numbers = [];
+
 L.Control.geocoder().addTo(map);
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     id: 'mapbox/light-v9',
@@ -23,13 +26,21 @@ info.update = function (props) {
 info.addTo(map);
 
 function getColor(d) {
-    return d > 150 ? '#800026' :
-        d > 100  ? '#BD0026' :
-            d > 50  ? '#E31A1C' :
-                d > 30  ? '#FC4E2A' :
-                    d > 10   ? '#FD8D3C' :
-                        d > 5   ? '#FEB24C' :
-                            d > 0   ? '#FED976' :
+    numbers.sort((a, b) => a - b)
+    $('#h4-1').text('>' + numbers[0]);
+    $('#h4-2').text('>' + numbers[1]);
+    $('#h4-3').text('>' + numbers[2]);
+    $('#h4-4').text('>' + numbers[3]);
+    $('#h4-5').text('>' + numbers[4]);
+    $('#h4-6').text('>' + numbers[5]);
+    $('#h4-7').text('>' + numbers[6]);
+    return d >= numbers[6] ? '#800026' :
+        d > numbers[5]  ? '#BD0026' :
+            d > numbers[4]  ? '#E31A1C' :
+                d > numbers[3]  ? '#FC4E2A' :
+                    d > numbers[2]   ? '#FD8D3C' :
+                        d > numbers[1]   ? '#FEB24C' :
+                            d >  numbers[0]  ? '#FED976' :
                                 '#fff7bc';
 }
 function style(feature) {

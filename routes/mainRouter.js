@@ -21,7 +21,9 @@ mainRouter.get('/getYears', startController.getYears)
 mainRouter.get('/getBasisOfTraining', startController.getBasisOfTraining)
 mainRouter.get('/getFormOfStudy', startController.getFormOfStudy)
 mainRouter.get('/getMinMaxMark', startController.getMinMaxMark)
+mainRouter.get('/getSpecialty', startController.getSpecialty)
 mainRouter.post('/postDataFilter', startController.postDataFilter)
-mainRouter.get('/getGeoFromName', startController.getGeoFromName)
+mainRouter.post('/postGeoFromName', startController.postGeoFromName)
+mainRouter.get('/getGeoSave', startController.getGeoSave)
 
 module.exports = mainRouter;
