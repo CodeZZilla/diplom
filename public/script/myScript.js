@@ -1,5 +1,6 @@
 let saveGeo = false;
 
+//загрузка файла на сервер
 $('#submit').bind('click', function (e) {
     e.preventDefault();
     $("#result").html("")
@@ -27,7 +28,7 @@ $('#submit').bind('click', function (e) {
                         }
                     }
                 }
-
+                numbersUp(data);
                 geojson = L.geoJson(statesData, {
                     style: style,
                     onEachFeature: onEachFeature
@@ -50,6 +51,7 @@ function unique(arr) {
     return result;
 }
 
+//динамическая легенда, основная логика
 function numbersUp(outputArr) {
     numbers = [];
 
@@ -101,6 +103,7 @@ function numbersUp(outputArr) {
 
 }
 
+//мето для заполнения мультиселектов
 function render() {
     $.get('/getYears', (data) => {
         $('#yearId').empty();
@@ -153,7 +156,7 @@ function render() {
 
 }
 
-
+//метод при загрузки основного окна
 $(window).load(function () {
     $('.loader').hide();
     $.get('/getData', (data) => {
@@ -173,6 +176,9 @@ $(window).load(function () {
             style: style,
             onEachFeature: onEachFeature
         }).addTo(map);
+        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        //     zindex:1000
+        // }).addTo(map);
     });
     render();
 
@@ -183,6 +189,7 @@ $(window).load(function () {
     $('#region').selectpicker('refresh');
 });
 
+//загрузка лоадера, когда работает аджакс
 $(document).ajaxStart(function () {
     //$('.mainblock').hide();
     $('.loader').show();
@@ -191,6 +198,7 @@ $(document).ajaxStart(function () {
     //$('.mainblock').show();
 });
 
+//метод при нажатии кнопки "Применить"
 function btnGo() {
     let year = $('#yearId').val();
     let basisOfTraining = $('#basisOfTrainingId').val();
@@ -237,6 +245,7 @@ function btnGo() {
     });
 }
 
+//метод при нажатии кнопки "Сбросить"
 function btnClear() {
     markers.forEach(el => el.remove());
     markers = [];
@@ -261,6 +270,7 @@ function btnClear() {
     });
 }
 
+//метод при нажатии кнопки "Поиск"
 function poisk() {
     let value = $('#region').val();
     let feature;

@@ -1,27 +1,29 @@
+//подключение модулей
 const reader = require('xlsx');
-const fs = require('fs');
+const fs = require('fs');//для работы с файловой системой
 const path = require('path');
 const nodeGeocoder = require('node-geocoder');
-const Note = require('../models/Note');
+const Note = require('../models/Note');//модель базы данных
 let options = {
     provider: 'openstreetmap'
 };
+let geoCoder = nodeGeocoder(options);//геокодер
 
-let geoCoder = nodeGeocoder(options);
-
-
+//вывод главной страницы
 exports.getStartPage = async function (req, res) {
     res.render('index');
 };
 
+//вывод всех данных, которые есть на главную страницу
 exports.getData = async function (req, res) {
 
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
             console.error(err);
         } else {
-            let all = JSON.parse(data);
+            let all = JSON.parse(data);//парсим данные з джейсона
             let output = new Map();
+            //подсчет количества студентов по регионам
             if (all.length !== 0) {
                 for (let item of all) {
                     if (item.Region === undefined) {
@@ -36,17 +38,18 @@ exports.getData = async function (req, res) {
                     }
 
                 }
-                let returnArr = [];
+                let returnArr = [];//массив возврата
                 for (let [key, value] of output.entries()) {
                     returnArr.push({region: key, count: value});
                 }
-                res.status(200).send(returnArr);
+                res.status(200).send(returnArr);//отправляем на view
             }
         }
     });
     //let all = await Note.find({});
 };
 
+//пост запрос сохранения информации с файла
 exports.postAddFile = async function (req, res) {
     const file = reader.readFile(path.resolve('uploads/' + req.file.originalname))
 
@@ -79,19 +82,22 @@ exports.postAddFile = async function (req, res) {
     // }
     // вывести все
 
-
+    //записать массив
     fs.writeFile(path.resolve('output.json'), JSON.stringify(temp), {flag: 'w+'}, err => {
         if (err) console.error(err);
     });
 
+    //удалить временный файл
     fs.unlink(path.resolve('uploads/' + req.file.originalname), function (err) {
         if (err) return console.log(err);
         console.log('file deleted successfully');
     });
+    //отправить отчёт
     res.send('Файл успешно загружен');
     //res.redirect('/');
 };
 
+// гет запрос на возврат  массива уникальных годов
 exports.getYears = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
@@ -115,14 +121,15 @@ exports.getYears = async function (req, res) {
                 for (let value of output) {
                     returnArr.push(value);
                 }
-                returnArr.sort();
+                returnArr.sort();//сортировка
 
-                res.status(200).send(returnArr);
+                res.status(200).send(returnArr);//отправка массива на view
             }
         }
     });
 };
 
+// гет запрос на возврат  массива с уникальными основаниями обучения,аналог предыдущего
 exports.getBasisOfTraining = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
@@ -152,6 +159,7 @@ exports.getBasisOfTraining = async function (req, res) {
     });
 };
 
+//аналог предыдущего
 exports.getFormOfStudy = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
@@ -185,6 +193,7 @@ exports.getFormOfStudy = async function (req, res) {
     });
 };
 
+//аналог предыдущего
 exports.getSpecialty = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
@@ -214,6 +223,7 @@ exports.getSpecialty = async function (req, res) {
     });
 };
 
+//гет запрос на возврат минимального и максимального бала
 exports.getMinMaxMark = async function (req, res) {
     fs.readFile('output.json', 'utf8', (err, data) => {
         if (err) {
@@ -235,6 +245,7 @@ exports.getMinMaxMark = async function (req, res) {
     });
 };
 
+//пост запрос фильтр , возврат отфильтрованых геоданных
 exports.postDataFilter = async function (req, res) {
     let year = req.body.year === '' ? [] : req.body.year;
     let basisOfTraining = req.body.basisOfTraining === '' ? [] : req.body.basisOfTraining;
@@ -337,6 +348,8 @@ exports.postDataFilter = async function (req, res) {
     });
 };
 
+
+//пост запрос фильтр , возврат отфильтрованых геоданных по региону
 exports.postGeoFromName = async function (req, res) {
     let year = req.body.year === '' ? [] : req.body.year;
     let name = req.body.nameRegion;
@@ -456,6 +469,7 @@ exports.postGeoFromName = async function (req, res) {
     });
 }
 
+//недоделаный
 exports.getGeoSave = function (req, res) {
 
     fs.readFile('output.json', 'utf8', async (err, data) => {

@@ -1,10 +1,17 @@
+//инициализация карты
 let geojson;
 let map = L.map('mapid').setView([60.8, 100], 3.5);
 let info = L.control();
 let markers = [];
 let numbers = [];
 
+//создание панели для правильного отображения слоев
+map.createPane('labels');
+map.getPane('labels').style.zIndex = 650;
+map.getPane('labels').style.pointerEvents = 'none';
+//добавляем геокодер на карту
 L.Control.geocoder().addTo(map);
+//создаем основной слой
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     id: 'mapbox/light-v9',
     tileSize: 512,
@@ -12,19 +19,30 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken:'pk.eyJ1Ijoia2l0dmFsZW50eW4xIiwiYSI6ImNrcHBxd2liMjBjYngycXM0aXl5MG8wZjkifQ.Lu-g6dONffgL4I0Cj1p5_A'
 }).addTo(map).bringToFront();
 
+//слоя с подписями на карте
+let positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {}).addTo(map);
+
+let positronLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+    pane: 'labels'
+}).addTo(map);
+
+//всплывающее окно с данными
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this.update();
     return this._div;
 };
 
+//обновления окна
 info.update = function (props) {
     this._div.innerHTML = (props ?
         '<b>' + props.name + '</b><br />' + props.student + ' people'
         : 'Наведите на область');
 };
+//добавление на карту
 info.addTo(map);
 
+//динамическая легенда
 function getColor(d) {
     numbers.sort((a, b) => a - b)
     $('#h4-1').text('>' + numbers[0]);
