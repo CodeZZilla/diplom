@@ -621,12 +621,17 @@ exports.getDataBar = function (req, res) {
                 let count = 0;
                 let sum = 0;
                 for (let item of all) {
-                    if (isNaN(item.AdmissionScore * 1) || item.EnrollmentYear.trim() === '') continue;
+                    try {
+                        if (isNaN(item.AdmissionScore * 1) || item.EnrollmentYear.trim() === '') continue;
 
-                    if (item.EnrollmentYear.trim() === year) {
-                        sum += item.AdmissionScore * 1;
-                        count += 1;
+                        if (item.EnrollmentYear.trim() === year) {
+                            sum += item.AdmissionScore * 1;
+                            count += 1;
+                        }
+                    }catch{
+                        continue;
                     }
+
                 }
                 try {
                     output.set(year, sum / count);
@@ -679,10 +684,14 @@ exports.getDataArea = function (req, res) {
             for (let year of yearsArr) {
                 let count = 0;
                 for (let item of all) {
-                    if (item.EnrollmentYear.trim() === '') continue;
+                    try {
+                        if (item.EnrollmentYear.trim() === '') continue;
 
-                    if (item.EnrollmentYear.trim() === year) {
-                        count += 1;
+                        if (item.EnrollmentYear.trim() === year) {
+                            count += 1;
+                        }
+                    }catch {
+                        continue;
                     }
                 }
                 try {
