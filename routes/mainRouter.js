@@ -25,5 +25,8 @@ mainRouter.get('/getSpecialty', startController.getSpecialty)
 mainRouter.post('/postDataFilter', startController.postDataFilter)
 mainRouter.post('/postGeoFromName', startController.postGeoFromName)
 mainRouter.get('/getGeoSave', startController.getGeoSave)
+mainRouter.get('/getDataPie', startController.getDataPie)
+mainRouter.get('/getDataBar', startController.getDataBar)
+mainRouter.get('/getDataArea', startController.getDataArea)
 
 module.exports = mainRouter;

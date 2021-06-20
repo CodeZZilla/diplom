@@ -103,8 +103,7 @@ exports.getYears = async function (req, res) {
         if (err) {
             console.error(err);
         } else {
-            let all = [];
-            all = JSON.parse(data);
+            let all = JSON.parse(data);
             let output = new Set();
             if (all.length !== 0) {
                 for (let item of all) {
@@ -348,7 +347,6 @@ exports.postDataFilter = async function (req, res) {
     });
 };
 
-
 //пост запрос фильтр , возврат отфильтрованых геоданных по региону
 exports.postGeoFromName = async function (req, res) {
     let year = req.body.year === '' ? [] : req.body.year;
@@ -452,16 +450,29 @@ exports.postGeoFromName = async function (req, res) {
                 }
             }
         }
-        let returnArr = [];
 
+        let fileData = fs.readFileSync("geoInfoMap.json", "utf8");
+        let allDataGeo = JSON.parse(fileData);
+        let mapGeoSaveData = new Map();
+        for (let item of allDataGeo) {
+            mapGeoSaveData.set(item.key, item.value);
+        }
+
+        let returnArr = [];
         let j = 1;
         for (let [key, value] of output.entries()) {
             let el = '';
-            try {
-                el = await geoCoder.geocode(key);
-            } finally {
+            if (mapGeoSaveData.has(key) && mapGeoSaveData.get(key) !== '') {
+                el = mapGeoSaveData.get(key);
                 returnArr.push({region: key, geo: el, count: value});
                 console.log(j++);
+            } else {
+                try {
+                    el = await geoCoder.geocode(key);
+                } finally {
+                    returnArr.push({region: key, geo: el, count: value});
+                    console.log(j++);
+                }
             }
         }
 
@@ -469,17 +480,18 @@ exports.postGeoFromName = async function (req, res) {
     });
 }
 
-//недоделаный
+//сохранение гео-данных в програме (серелизация уникальных данных)
 exports.getGeoSave = function (req, res) {
 
     fs.readFile('output.json', 'utf8', async (err, data) => {
         if (err) console.error(err);
-        // fs.readFile('geoInfoMap.json', 'utf8', async (err, jsonStr) => {
-        //     if (err) console.error(err);
-        //     let mapFromFile = JSON.parse(jsonStr);
-        //     let merged = new Map([...mapFromFile, ...returnMap]);
-        //
-        // });
+
+        let fileData = fs.readFileSync("geoInfoMap.json", "utf8");
+        let allDataGeo = JSON.parse(fileData);
+        let mapGeoSaveData = new Map();
+        for (let item of allDataGeo) {
+            mapGeoSaveData.set(item.key, item.value);
+        }
 
         let all = JSON.parse(data);
         let output = new Set();
@@ -490,6 +502,10 @@ exports.getGeoSave = function (req, res) {
                 let adress = (item.Region.trim().split(' ')[0]) +
                     (item.District !== undefined ? (', ' + item.District.trim()) : '') +
                     (item.Locality !== undefined ? (', ' + item.Locality.trim()) : '');
+
+                if (mapGeoSaveData.has(adress)) {
+                    continue;
+                }
 
                 if (output.has(adress)) {
                     output.add(adress);
@@ -512,9 +528,178 @@ exports.getGeoSave = function (req, res) {
             }
         }
 
-        console.log(returnMap);
-        fs.writeFileSync(path.resolve('geoInfoMap.json'), JSON.stringify(returnMap.entries()), {flag: 'w+'});
-        res.status(200).send(returnMap);
+        let merged = new Map([...mapGeoSaveData, ...returnMap]);
+
+        let returnArr = [];
+        for (let [key, value] of merged.entries()) {
+            returnArr.push({key: key, value: value});
+        }
+
+        fs.writeFileSync(path.resolve('geoInfoMap.json'), JSON.stringify(merged), {flag: 'w+'});
+        res.status(200).send(returnArr);
     });
 
+}
+
+//данные для круглого графика (возвращает массив масивов)
+exports.getDataPie = function (req, res) {
+    fs.readFile('output.json', 'utf8', async (err, data) => {
+        if (err) console.error(err);
+        let all = JSON.parse(data);
+        let output = new Map();
+        //подсчет количества студентов по регионам
+        if (all.length !== 0) {
+            for (let item of all) {
+                if (item.Region === undefined) {
+                    continue;
+                } else {
+                    if (output.has(item.Region.trim())) {
+                        let val = output.get(item.Region.trim());
+                        output.set(item.Region.trim(), val + 1);
+                    } else {
+                        output.set(item.Region.trim(), 1);
+                    }
+                }
+
+            }
+
+            let returnTmpArr = [];//массив возврата
+            for (let [key, value] of output.entries()) {
+                returnTmpArr.push([key, value]);
+            }
+            returnTmpArr.sort = function (a, b) {
+                return a[1] > b[1] ? 1 : a[1] < b[1] ? -1 : 0;
+            }
+
+            let returnArr = [];
+            let tempItemCount = 0;
+            for (let i = 0; i < returnTmpArr.length; i++) {
+                if (i < 4) {
+                    returnArr.push(returnTmpArr[i]);
+                } else {
+                    tempItemCount += returnTmpArr[i][1];
+                }
+            }
+            returnArr.push(['Другие', tempItemCount]);
+
+            res.status(200).send(returnArr);//отправляем на view
+        }
+
+    });
+}
+
+//данные для bar графика (возвращает массив масивов) - рейтинг балов по годам
+exports.getDataBar = function (req, res) {
+    fs.readFile('output.json', 'utf8', async (err, data) => {
+        if (err) console.error(err);
+        let all = JSON.parse(data);
+
+        let years = new Set();
+        let yearsArr = [];
+        if (all.length !== 0) {
+            for (let item of all) {
+                try {
+                    if (item.EnrollmentYear.trim() === '')
+                        continue;
+                    years.add(item.EnrollmentYear.trim());
+                } finally {
+                    continue;
+                }
+            }
+
+            for (let value of years) {
+                yearsArr.push(value);
+            }
+            yearsArr.sort();//сортировка
+        }
+
+
+        let output = new Map();
+        //подсчет  средних балов по годам
+        if (all.length !== 0) {
+            for (let year of yearsArr) {
+                let count = 0;
+                let sum = 0;
+                for (let item of all) {
+                    if (isNaN(item.AdmissionScore * 1) || item.EnrollmentYear.trim() === '') continue;
+
+                    if (item.EnrollmentYear.trim() === year) {
+                        sum += item.AdmissionScore * 1;
+                        count += 1;
+                    }
+                }
+                try {
+                    output.set(year, sum / count);
+                } finally {
+                    continue;
+                }
+            }
+
+            let returnArr = [];//массив возврата
+            for (let [key, value] of output.entries()) {
+                if(isNaN(value)) continue;
+                returnArr.push([key, Math.round(value)]);
+            }
+
+            res.status(200).send(returnArr);//отправляем на view
+        }
+
+    });
+}
+
+//данные для area графика (возвращает массив масивов) - поступившие по годам
+exports.getDataArea = function (req, res) {
+    fs.readFile('output.json', 'utf8', async (err, data) => {
+        if (err) console.error(err);
+        let all = JSON.parse(data);
+
+        let years = new Set();
+        let yearsArr = [];
+        if (all.length !== 0) {
+            for (let item of all) {
+                try {
+                    if (item.EnrollmentYear.trim() === '')
+                        continue;
+                    years.add(item.EnrollmentYear.trim());
+                } finally {
+                    continue;
+                }
+            }
+
+            for (let value of years) {
+                yearsArr.push(value);
+            }
+            yearsArr.sort();//сортировка
+        }
+
+
+        let output = new Map();
+        //подсчет количества поступивших по годам
+        if (all.length !== 0) {
+            for (let year of yearsArr) {
+                let count = 0;
+                for (let item of all) {
+                    if (item.EnrollmentYear.trim() === '') continue;
+
+                    if (item.EnrollmentYear.trim() === year) {
+                        count += 1;
+                    }
+                }
+                try {
+                    output.set(year, count);
+                } finally {
+                    continue;
+                }
+            }
+
+            let returnArr = [];//массив возврата
+            for (let [key, value] of output.entries()) {
+                if(isNaN(value)) continue;
+                returnArr.push([key, value]);
+            }
+
+            res.status(200).send(returnArr);//отправляем на view
+        }
+
+    });
 }

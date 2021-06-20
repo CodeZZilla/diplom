@@ -28,6 +28,8 @@ $('#submit').bind('click', function (e) {
                         }
                     }
                 }
+
+                render();
                 numbersUp(data);
                 geojson = L.geoJson(statesData, {
                     style: style,
@@ -331,21 +333,22 @@ function poisk() {
 
             numbersUp(data);
             geojson.remove();
-            geojson = L.geoJson(statesData, {
-                style: style,
-                onEachFeature: onEachFeature
-            }).addTo(map);
+            // geojson = L.geoJson(statesData, {
+            //     style: style,
+            //     onEachFeature: onEachFeature
+            // }).addTo(map);
 
             map.fitBounds(feature.properties.cartodb_id);
         }
     });
-
-
 }
 
-// function saveGeo(){
-//     if(!saveGeo){
-//
-//         saveGeo = true;
-//     }
-// }
+
+function saveGeoData(){
+    if(!saveGeo){
+        $.get('/getGeoSave', (data) => {
+            $('#result').text('Сохранено!');
+            saveGeo = true;
+        });
+    }
+}
