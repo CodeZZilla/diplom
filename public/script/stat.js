@@ -1,3 +1,4 @@
+
 //pie
 anychart.onDocumentLoad(function () {
     $.get('/getDataPie', (data) => {
@@ -6,6 +7,8 @@ anychart.onDocumentLoad(function () {
         // set the data
         chart.data(data);
         let legend = chart.legend();
+        chart.tooltip().format("Количество поступивших:{%y}");
+
         legend.itemsLayout("verticalExpandable");
         legend.position("right");
         // set chart title
@@ -27,6 +30,9 @@ $.get('/getDataBar', (data) => {
     // create a bar series and set the data
     let series = chart.bar(data);
 
+    var tooltip = chart.getSeries(0).tooltip();
+    //tooltip.title().text("Привет");
+    tooltip.format("Средний бал: {%y}");
     chart.title("Рейтинг балов по годам")
     chart.barGroupsPadding(0);
     // set the container id
@@ -43,7 +49,7 @@ $.get('/getDataArea', (dataArea) => {
 
     // create an area series and set the data
     let seriesArea = chartArea.area(dataArea);
-
+    chartArea.tooltip().format("Количество поступивших:{%y}");
     chartArea.title("Топ поступившых по годам");
     chartArea.xScale().mode('continuous');
     // set the container id
